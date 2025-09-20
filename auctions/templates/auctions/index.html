@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <div class="listing-container" style="display:flex; flex-wrap:wrap; gap:50px;">
+        {% for listing in listings %}
+        
+            <div  class="card" style="width: 18rem; ">
+
+                {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 100%; height: 200px; object-fit: contain; background:#f8f9fa;" class="card-img-top">
+                {% endif %}
+
+                    <div class="card-body">
+                        <ul  class="list-group list-group-flush">
+                            <li class="list-group-item">Title :  {{listing.title}}</li>
+                            <li class="list-group-item">Description : {{listing.description}}</li>
+                            <li class="list-group-item">Starting_bid :  {{ listing.starting_bid }} $</li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <a href="{% url 'detail' listing.id %}" class="card-link">See Details</a>
+                    </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+{% endblock %}
+
+
+
+
+ 

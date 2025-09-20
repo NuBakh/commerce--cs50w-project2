@@ -1,0 +1,41 @@
+{% extends "auctions/layout.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+<h1>New Auction Item</h1>
+<form action="{% url 'create' %}" method="POST" class="create-watchlist">
+
+    {% csrf_token %}
+
+   <div>
+      <label for="floatingInput">Title:</label>
+      {{ form.title |add_class:"form-control w-50" }}
+   </div>
+  
+   <div>
+      <label>Description:</label>
+      {{ form.description |add_class:"form-control w-50" }}
+   </div>
+   
+   <div>
+      <label>Image url:</label>
+      {{ form.image_url |add_class:"form-control w-50" }}
+   </div>
+   
+   <div>
+      <label>Starting bid:</label>
+      {{ form.starting_bid |add_class:"form-control w-50" }}
+   </div>
+      
+   <div>
+      <label>Category:</label>
+      {{ form.category |add_class:"form-control w-50" }}
+   </div>
+
+   <div class="create-button">
+      <input type='submit' class="btn btn-primary"/>
+   </div>
+         
+</form>
+
+{% endblock %}

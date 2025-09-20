@@ -1,0 +1,150 @@
+{% extends "auctions/layout.html" %}
+{% load widget_tweaks %}
+{% block body %}
+
+
+ <!-- Auction status & owner/winner actions -->
+
+<div class="details-close">
+        <h2>Listing Details ✅</h2>
+
+        <div class=" alert-success d-flex align-items-center">
+
+            {% if listing.owner == user and listing.active %}
+                <form action="" method='POST'>
+                    {% csrf_token %}
+                    <input  type="submit" name='close'  value="Close auction" class="btn btn-primary"/>
+                </form>
+            {% endif %}
+
+
+           
+            {% if listing.owner == user and not listing.active %}
+              <p>This auction is closed. You were the owner.</p>
+            {% elif listing.winner == user and not listing.active %}
+              <h2> 🎉 You won this auction!</h2>
+            {% elif listing.winner != user and not listing.active %}
+              <p>This auction is closed. You didn’t win.</p>
+            {% endif %}
+
+
+        </div>
+
+</div>
+
+
+<div class="detail-listing">
+
+
+    <!-- Listing details with watchlist button -->
+    
+    <div class="card list" style="width: 18rem;">
+        <form action="{% url 'watchlist'  %}" method="POST" >
+            {% csrf_token %}
+                {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 200px; height: 200px; object-fit: cover;"  class="card-img-top">
+                 {% endif %}
+
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Title:  {{listing.title}}</li>
+                        <li class="list-group-item">Description :{{listing.description}}</li>
+                        <li class="list-group-item">Starting_bid :  {{ listing.starting_bid }} $</li>
+                    </ul>
+                    <input type="hidden" name='listing_id'  value="{{ listing.id }}"/>
+                    <div class="card-body">
+                        {% if listing in request.user.watchlist.all%}
+                            <input type="submit" name='Remove from watchlist'  value="Remove from watchlist" class="btn btn-primary"/>
+                        {% else %}
+
+                        <input type="submit" name='Add to watchlist'  value="Add to watchlist" class="btn btn-primary"/>
+
+                        {% endif %}
+                    </div>
+               </div>
+        </form>
+    </div>
+
+
+
+    <div class="bid-container">
+
+
+        <!-- Bid warning message -->
+
+        <div class="message-container"> 
+            <p  class=" message alert alert-info" role="alert">
+                Your bid must be higher than the current highest bid, or the starting bid if no bids have been made.
+            </p>     
+        </div>
+
+
+        <!-- Bidding form, list of bids, and current highest bid -->
+
+        <div>
+
+            {% if listing.active and  user.is_authenticated %}
+             <form action="" method="POST"  >
+                {% csrf_token %}        
+                <div class="amount">
+                    <h2 for="floatingInput">Place Your Bid ✅</h2>
+                    {{ form.amount |add_class:"form-control " }}
+                </div>
+
+                <input type="submit" name="submit_bid" class="btn btn-primary" />
+             </form>
+            {% endif %}
+
+            {% for bid in bids %}
+                <ol class="list-group list-group-numbered bids">
+                     <li class="list-group-item">{{bid}} </li>
+                </ol>   
+            {% endfor %}
+             <h2 class="form-control bids" >Current Highest Bid: {{prize}} $</h2>
+             
+         </div>
+
+
+    </div>
+
+
+   <!-- Comment form and user comments -->
+
+    <div class="comment-container ">
+
+        {% if listing.active and  user.is_authenticated %}
+
+            <form action="" method="POST">
+                {% csrf_token %}              
+                <div class="comment">
+                    <h2 >Comments ✅:</h2>
+                    <label for="id_comment" class="form-label">Add a comment:</label>
+
+                    {{ formComment.comment |add_class:"form-control " }}
+                </div>
+                <input type="submit" name="submit_comment"  class="btn btn-primary" />
+            </form>
+
+        {% endif %}
+
+
+        <div class="user-comment comments mt-4 " >
+              {% for com in comment %}
+                <div class="comment border rounded p-2 mb-2 bg-light">
+                     <div class="small text-muted">
+                         {{ com.timestamp|date:"Y.m.d" }} — {{ com.user }} :
+                     </div>
+                     <div>"{{ com.comment }}"</div>
+                </div>
+               {% empty %}
+                    <p>No comments yet. Be the first to comment!</p>
+               {% endfor %}
+        </div>
+
+    </div>
+
+   
+</div>
+
+  
+{% endblock %}
